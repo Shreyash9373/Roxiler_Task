@@ -7,6 +7,11 @@ import { ConfigModule } from '@nestjs/config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
+import { StoresModule } from './stores/stores.module';
+import { RatingsModule } from './ratings/ratings.module';
+import { Store } from './stores/entities/store.entity';
+import { Rating } from './ratings/entities/rating.entity';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -14,11 +19,14 @@ import { User } from './users/entities/user.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL, // Supabase connection string
-      entities: [User],
+      entities: [User, Store, Rating],
       synchronize: true, // turn OFF in production
     }),
     AuthModule,
     UsersModule,
+    StoresModule,
+    RatingsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

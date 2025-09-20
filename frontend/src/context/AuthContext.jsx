@@ -8,22 +8,23 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // On mount, try fetching current user (if cookie exists)
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const res = await axiosInstance.get("/auth/me"); // 🔥 backend should expose this route
-  //       setUser(res.data);
-  //     } catch (err) {
-  //       setUser(null);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axiosInstance.get("/auth/me"); // 🔥 backend should expose this route
+        setUser(res.data);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  const login = (userData) => {
-    setUser(userData);
+  const login = async (user) => {
+    //const res = await axiosInstance.get("/auth/me");
+    setUser(user);
   };
 
   const logout = async () => {

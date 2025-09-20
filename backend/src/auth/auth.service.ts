@@ -44,20 +44,24 @@ export class AuthService {
     return await this.usersRepository.save(user);
   }
 
-  async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ accessToken: string; user: User }> {
     const { email, password } = loginDto;
 
     const user = await this.usersRepository.findOne({ where: { email } });
+
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials');
 
     const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = await this.jwtService.signAsync(payload);
 
-    return { accessToken };
+    return { accessToken, user };
   }
 
   async updatePassword(userId: string, dto: UpdatePasswordDto) {

@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { loginUser } from "../../api/authApi";
 import { toast } from "react-toastify";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ onSuccess }) => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -16,8 +19,11 @@ const LoginForm = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginUser(formData);
+      const res = await loginUser(formData);
+      login(res.user);
+      navigate("/dashboard");
       toast.success("Login successful");
+
       if (onSuccess) onSuccess(); // callback to parent page
     } catch (err) {
       //setError(err.response?.data?.message || "Login failed");

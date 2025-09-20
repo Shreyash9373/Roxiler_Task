@@ -9,9 +9,9 @@ const LoginPage = () => {
 
   const handleLoginSuccess = () => {
     // Update global auth state
-    login({ loggedIn: true });
+    // login({ loggedIn: true });
     // Redirect to dashboard (or home)
-    navigate("/dashboard");
+    // navigate("/dashboard");
   };
 
   return (

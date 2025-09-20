@@ -4,6 +4,11 @@ import { ToastContainer } from "react-toastify";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UpdatePasswordPage from "./pages/UpdatePassword";
+import AdminDashboard from "./pages/dashboard/admin/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardLayout from "./layouts/DashboardLayout";
+import ManageUsers from "./pages/dashboard/admin/ManageUsers";
+import ManageStores from "./pages/dashboard/admin/ManageStores";
 
 const App = () => {
   return (
@@ -32,7 +37,23 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/update-password" element={<UpdatePasswordPage />} />
+        {/* <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+</Route> */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            {/* Role-based example */}
+            <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+              <Route path="/manage-stores" element={<ManageStores />} />
+              <Route path="/dashboard" element={<AdminDashboard />} />
+              <Route path="/manage-users" element={<ManageUsers />} />
+            </Route>
 
+            {/*  <Route element={<ProtectedRoute allowedRoles={['USER']} />}>
+        <Route path="/profile" element={<Profile />} />
+      </Route> */}
+          </Route>
+        </Route>
         {/* <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manageCategory" element={<ManageCategory />} />

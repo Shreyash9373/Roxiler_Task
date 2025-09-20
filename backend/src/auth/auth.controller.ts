@@ -34,7 +34,7 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken } = await this.authService.login(loginDto);
+    const { accessToken, user } = await this.authService.login(loginDto);
 
     // Set token in cookies
     res.cookie('access_token', accessToken, {
@@ -44,7 +44,7 @@ export class AuthController {
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
-    return { message: 'Login successful' };
+    return { message: 'Login successful', user };
   }
 
   @UseGuards(JwtAuthGuard)

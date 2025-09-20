@@ -1,9 +1,12 @@
+import { Rating } from 'src/ratings/entities/rating.entity';
+import { Store } from 'src/stores/entities/store.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 export enum UserRole {
@@ -35,7 +38,12 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole;
+  // Relations
+  @OneToMany(() => Store, (store) => store.owner)
+  stores: Store[];
 
+  @OneToMany(() => Rating, (rating) => rating.user)
+  ratings: Rating[];
   @CreateDateColumn()
   created_at: Date;
 
