@@ -36,12 +36,11 @@ export class AuthController {
   ) {
     const { accessToken, user } = await this.authService.login(loginDto);
 
-    // Set token in cookies
     res.cookie('access_token', accessToken, {
-      httpOnly: true, // ✅ prevents client-side JS access
-      secure: process.env.NODE_ENV === 'production', // ✅ HTTPS only in production
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 60 * 60 * 1000,
     });
 
     return { message: 'Login successful', user };
@@ -51,7 +50,7 @@ export class AuthController {
   @Get('me')
   @ApiOperation({ summary: 'Get current logged-in user' })
   async getMe(@Req() req: any) {
-    return req.user; // ✅ comes from JwtStrategy validate()
+    return req.user;
   }
 
   @Post('logout')
@@ -67,7 +66,6 @@ export class AuthController {
     @Body() dto: UpdatePasswordDto,
   ) {
     try {
-      console.log('User ID from request:', req); // Debug log
       return this.authService.updatePassword(req.user.userId, dto);
     } catch (error) {
       console.error(error);

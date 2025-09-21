@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getStores, createStore } from "../../../api/authApi";
+import { getStores, createStore, getOwners } from "../../../api/authApi";
 import { toast } from "react-toastify";
 
 const ManageStores = () => {
@@ -7,6 +7,7 @@ const ManageStores = () => {
     name: "",
     email: "",
     address: "",
+    ownerId: "",
   });
   const [filters, setFilters] = useState({
     name: "",
@@ -14,10 +15,10 @@ const ManageStores = () => {
     address: "",
   });
   const [stores, setStores] = useState([]);
+  const [owner, setOwner] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
 
-  // Fetch all stores
   const fetchStores = async () => {
     setLoading(true);
     try {
@@ -30,27 +31,46 @@ const ManageStores = () => {
       setLoading(false);
     }
   };
+  const fetchOwners = async () => {
+    setLoading(true);
+    try {
+      const res = await getOwners();
+      setOwner(res.data);
+    } catch (err) {
+      toast.error("Failed to fetch Owners");
+      console.error("Failed to fetch stores:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchStores();
   }, [filters]);
 
-  // Handle form changes
+  useEffect(() => {
+    fetchOwners();
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  // Handle filter change
+
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
-  // Submit new store
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (formData.ownerId === "") {
+        toast.error("Store cannot be creted without an owner");
+        return;
+      }
       await createStore(formData);
       toast.success("Store created successfully ");
-      setFormData({ name: "", email: "", address: "" });
-      fetchStores(); // refresh list
+      setFormData({ name: "", email: "", address: "", ownerId: "" });
+      fetchStores();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create store");
     }
@@ -102,6 +122,21 @@ const ManageStores = () => {
             className="border p-2 w-full"
           />
         </div>
+        <select
+          name="ownerId"
+          value={formData.ownerId}
+          onChange={handleChange}
+          className="border p-2 rounded w-full md:flex-1"
+        >
+          <option value="">Select an Owner</option>
+          {owner.map((owner) => {
+            return (
+              <option key={owner.id} value={owner.id}>
+                {owner.name}
+              </option>
+            );
+          })}
+        </select>
 
         <button
           type="submit"
@@ -111,7 +146,7 @@ const ManageStores = () => {
         </button>
       </form>
       {/* Filters */}
-      <div className="mb-4 space-x-2">
+      <div className="mb-4 space-y-2 space-x-2">
         <input
           type="text"
           name="name"
@@ -141,36 +176,40 @@ const ManageStores = () => {
       {loading ? (
         <p>Loading stores...</p>
       ) : (
-        <table className="border-collapse border w-full">
-          <thead>
-            <tr>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Address</th>
-              <th className="border p-2">Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stores.length === 0 ? (
+        <div className="overflow-x-auto bg-white shadow rounded">
+          <table className="border-collapse border w-full overflow-x-auto">
+            <thead>
               <tr>
-                <td colSpan="4" className="text-center p-2">
-                  No stores found
-                </td>
+                <th className="border p-2">Name</th>
+                <th className="border p-2">Email</th>
+                <th className="border p-2">Address</th>
+                <th className="border p-2">Rating</th>
               </tr>
-            ) : (
-              stores.map((store) => (
-                <tr key={store.id}>
-                  <td className="border p-2">{store.name}</td>
-                  <td className="border p-2">{store.email}</td>
-                  <td className="border p-2">{store.address}</td>
-                  <td className="border p-2">
-                    {store.averageRating ? store.averageRating.toFixed(1) : "0"}
+            </thead>
+            <tbody>
+              {stores.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center p-2">
+                    No stores found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                stores.map((store) => (
+                  <tr key={store.id}>
+                    <td className="border p-2">{store.name}</td>
+                    <td className="border p-2">{store.email}</td>
+                    <td className="border p-2">{store.address}</td>
+                    <td className="border p-2">
+                      {store.averageRating
+                        ? store.averageRating.toFixed(1)
+                        : "0"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

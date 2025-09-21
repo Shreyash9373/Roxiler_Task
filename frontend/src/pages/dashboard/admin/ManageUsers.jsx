@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getUsers, createUser } from "../../../api/authApi";
+import { toast } from "react-toastify";
 
 const ManageUsers = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +21,6 @@ const ManageUsers = () => {
   const [serverError, setServerError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch users with filters
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -37,23 +37,17 @@ const ManageUsers = () => {
     fetchUsers();
   }, [filters]);
 
-  // Handle form change
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  // Handle filter change
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e) =>
     setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
 
-  // Submit new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await createUser(formData);
-      setSuccess("User created successfully ✅");
-      setServerError("");
+      toast.success("User created successfully");
       setFormData({
         name: "",
         email: "",
@@ -61,102 +55,104 @@ const ManageUsers = () => {
         address: "",
         role: "USER",
       });
-      fetchUsers(); // refresh list
+      fetchUsers();
     } catch (err) {
-      setServerError(err.response?.data?.message || "Failed to create user");
+      toast.error(err.response?.data?.message || "Failed to create user");
       setSuccess("");
     }
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6 max-w-full overflow-x-hidden">
       <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
 
       {/* Add User Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 border p-4 rounded mb-6"
+        className="space-y-4 border p-4 rounded mb-6 bg-white shadow-sm w-full max-w-full"
       >
         <h2 className="text-lg font-semibold">Add User/Admin</h2>
-        {serverError && <p className="text-red-500">{serverError}</p>}
         {success && <p className="text-green-500">{success}</p>}
 
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="border p-2 w-full"
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div className="w-full min-w-0">
+            <label className="block mb-1">Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="border p-2 w-full rounded"
+            />
+          </div>
 
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="border p-2 w-full"
-          />
-        </div>
+          <div className="w-full min-w-0">
+            <label className="block mb-1">Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="border p-2 w-full rounded"
+            />
+          </div>
 
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="border p-2 w-full"
-          />
-        </div>
+          <div className="w-full min-w-0">
+            <label className="block mb-1">Password:</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="border p-2 w-full rounded"
+            />
+          </div>
 
-        <div>
-          <label>Address:</label>
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-        </div>
+          <div className="w-full min-w-0">
+            <label className="block mb-1">Role:</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            >
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="STORE_OWNER">OWNER</option>
+            </select>
+          </div>
 
-        <div>
-          <label>Role:</label>
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          >
-            <option value="USER">USER</option>
-            <option value="ADMIN">ADMIN</option>
-          </select>
+          <div className="md:col-span-2 w-full min-w-0">
+            <label className="block mb-1">Address:</label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            />
+          </div>
         </div>
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          className="bg-green-600 text-white px-4 py-2 rounded w-full md:w-auto"
         >
           Add User
         </button>
       </form>
 
       {/* Filters */}
-      <div className="mb-4 space-x-2">
+      <div className="mb-4 flex flex-col md:flex-row gap-2 w-full">
         <input
           type="text"
           name="name"
           placeholder="Filter by Name"
           value={filters.name}
           onChange={handleFilterChange}
-          className="border p-2"
+          className="border p-2 rounded w-full md:flex-1"
         />
         <input
           type="text"
@@ -164,7 +160,7 @@ const ManageUsers = () => {
           placeholder="Filter by Email"
           value={filters.email}
           onChange={handleFilterChange}
-          className="border p-2"
+          className="border p-2 rounded w-full md:flex-1"
         />
         <input
           type="text"
@@ -172,17 +168,18 @@ const ManageUsers = () => {
           placeholder="Filter by Address"
           value={filters.address}
           onChange={handleFilterChange}
-          className="border p-2"
+          className="border p-2 rounded w-full md:flex-1"
         />
         <select
           name="role"
           value={filters.role}
           onChange={handleFilterChange}
-          className="border p-2"
+          className="border p-2 rounded w-full md:flex-1"
         >
           <option value="">All Roles</option>
           <option value="USER">USER</option>
           <option value="ADMIN">ADMIN</option>
+          <option value="STORE_OWNER">OWNER</option>
         </select>
       </div>
 
@@ -190,40 +187,42 @@ const ManageUsers = () => {
       {loading ? (
         <p>Loading users...</p>
       ) : (
-        <table className="border-collapse border w-full">
-          <thead>
-            <tr>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Address</th>
-              <th className="border p-2">Role</th>
-              <th className="border p-2">Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users?.length === 0 ? (
+        <div className="overflow-x-auto bg-white shadow rounded">
+          <table className="border-collapse border w-full text-sm">
+            <thead className="bg-gray-100">
               <tr>
-                <td colSpan="4" className="text-center p-2">
-                  No users found
-                </td>
+                <th className="border p-2">Name</th>
+                <th className="border p-2">Email</th>
+                <th className="border p-2">Address</th>
+                <th className="border p-2">Role</th>
+                <th className="border p-2">Rating</th>
               </tr>
-            ) : (
-              users?.map((u) => (
-                <tr key={u.id}>
-                  <td className="border p-2">{u.name}</td>
-                  <td className="border p-2">{u.email}</td>
-                  <td className="border p-2">{u.address}</td>
-                  <td className="border p-2">{u.role}</td>
-                  <td className="border p-2">
-                    {u.role === "STORE_OWNER"
-                      ? u.averageRating?.toFixed(1) || "0"
-                      : "-"}
+            </thead>
+            <tbody>
+              {users?.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center p-2">
+                    No users found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                users?.map((u) => (
+                  <tr key={u.id} className="hover:bg-gray-50">
+                    <td className="border p-2">{u.name}</td>
+                    <td className="border p-2">{u.email}</td>
+                    <td className="border p-2">{u.address}</td>
+                    <td className="border p-2">{u.role}</td>
+                    <td className="border p-2 text-center">
+                      {u.role === "STORE_OWNER"
+                        ? u.averageRating?.toFixed(1) || "0"
+                        : "-"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

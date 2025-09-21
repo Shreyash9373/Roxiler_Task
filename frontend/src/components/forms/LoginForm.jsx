@@ -21,7 +21,13 @@ const LoginForm = ({ onSuccess }) => {
     try {
       const res = await loginUser(formData);
       login(res.user);
-      navigate("/dashboard");
+      if (res.user.role === "ADMIN") {
+        navigate("/dashboard");
+      } else if (res.user.role === "USER") {
+        navigate("/stores");
+      } else if (res.user.role === "STORE_OWNER") {
+        navigate("/view-users");
+      }
       toast.success("Login successful");
 
       if (onSuccess) onSuccess(); // callback to parent page

@@ -4,7 +4,6 @@ import { AdminService } from './admin.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
-// ✅ only admins
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

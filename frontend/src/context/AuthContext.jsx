@@ -4,14 +4,13 @@ import axiosInstance from "../utils/axiosInstance";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // store logged-in user
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, try fetching current user (if cookie exists)
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axiosInstance.get("/auth/me"); // 🔥 backend should expose this route
+        const res = await axiosInstance.get("/auth/me");
         setUser(res.data);
       } catch (err) {
         setUser(null);
@@ -23,13 +22,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (user) => {
-    //const res = await axiosInstance.get("/auth/me");
     setUser(user);
   };
 
   const logout = async () => {
     try {
-      await axiosInstance.post("/auth/logout"); // clear cookie on backend
+      await axiosInstance.post("/auth/logout");
     } catch (err) {
       console.error("Logout error:", err);
     }

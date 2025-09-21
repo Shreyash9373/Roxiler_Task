@@ -6,12 +6,11 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleRegisterSuccess = () => {
-    // After registration, redirect to login page
     navigate("/login");
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen bg-gray-100 px-2">
       <div className="bg-white shadow-lg rounded-lg p-8 w-96">
         <RegisterForm onSuccess={handleRegisterSuccess} />
         <p className="mt-4 text-sm text-center">

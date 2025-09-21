@@ -14,19 +14,14 @@ export class Rating {
   id: string;
 
   @Column({ type: 'int' })
-  score: number; // e.g., 1–5 stars
-
-  @Column({ length: 400, nullable: true })
-  comment: string;
+  score: number;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  // Relation → A rating belongs to a store
   @ManyToOne(() => Store, (store) => store.ratings, { onDelete: 'CASCADE' })
   store: Store;
 
-  // Relation → A rating is given by a user
   @ManyToOne(() => User, (user) => user.ratings, { onDelete: 'CASCADE' })
   user: User;
 }

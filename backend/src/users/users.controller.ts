@@ -21,7 +21,10 @@ export class UsersController {
     @Query('address') address?: string,
     @Query('role') role?: string,
   ) {
-    console.log(name, email, address, role);
     return this.usersService.findAll({ name, email, address, role });
+  }
+  @Get('/get-owners')
+  getAllOwners() {
+    return this.usersService.getAllOwners();
   }
 }

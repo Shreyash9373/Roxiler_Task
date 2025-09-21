@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Rating } from './entities/rating.entity';
+import { Repository } from 'typeorm';
 import { CreateRatingDto } from './dto/create-rating.dto';
-import { UpdateRatingDto } from './dto/update-rating.dto';
 
 @Injectable()
 export class RatingsService {
-  create(createRatingDto: CreateRatingDto) {
-    return 'This action adds a new rating';
-  }
+  constructor(
+    @InjectRepository(Rating)
+    private readonly ratingRepo: Repository<Rating>,
+  ) {}
 
-  findAll() {
-    return `This action returns all ratings`;
-  }
+  async createOrUpdate(storeId: string, userId: string, dto: CreateRatingDto) {
+    let rating = await this.ratingRepo.findOne({
+      where: { store: { id: storeId }, user: { id: userId } },
+      relations: ['store', 'user'],
+    });
+    if (rating && dto.value === null) {
+      return this.ratingRepo.remove(rating);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rating`;
-  }
+    if (rating) {
+      rating.score = dto.value;
+    } else {
+      rating = this.ratingRepo.create({
+        score: dto.value,
+        store: { id: storeId },
+        user: { id: userId },
+      });
+    }
 
-  update(id: number, updateRatingDto: UpdateRatingDto) {
-    return `This action updates a #${id} rating`;
+    return this.ratingRepo.save(rating);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} rating`;
+  async findRatingsForOwner(ownerId: string) {
+    return this.ratingRepo.find({
+      where: { store: { owner: { id: ownerId } } },
+      relations: ['user', 'store'],
+      select: {
+        id: true,
+        score: true,
+        user: { id: true, name: true, email: true },
+        store: { id: true, name: true },
+      },
+    });
   }
 }

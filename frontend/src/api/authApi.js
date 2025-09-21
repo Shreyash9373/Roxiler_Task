@@ -24,7 +24,6 @@ export const createUser = async (userData) => {
 };
 
 export const getUsers = async (filters) => {
-  console.log("Filters in API:", filters);
   const res = await axiosInstance.get("/users", {
     params: filters,
     withCredentials: true,
@@ -42,4 +41,8 @@ export const getStores = async (filters) => {
     params: filters,
     withCredentials: true,
   });
+};
+
+export const getOwners = async () => {
+  return await axiosInstance.get("/users/get-owners");
 };

@@ -5,7 +5,6 @@ import useAuth from "../hooks/useAuth";
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
 
-  // Still checking user (e.g., fetching /auth/me)
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -14,17 +13,14 @@ const ProtectedRoute = ({ allowedRoles }) => {
     );
   }
 
-  // Not logged in → redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If allowedRoles is given, check role
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // Otherwise → render child routes
   return <Outlet />;
 };
 

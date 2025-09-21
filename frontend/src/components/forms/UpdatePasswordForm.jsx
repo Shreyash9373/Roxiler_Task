@@ -17,7 +17,7 @@ const UpdatePasswordForm = () => {
   const onSubmit = async (data) => {
     try {
       await axiosInstance.patch("/auth/update-password", data);
-      toast.success("Password updated successfully ✅");
+      toast.success("Password updated successfully ");
       setServerError("");
       reset();
     } catch (err) {

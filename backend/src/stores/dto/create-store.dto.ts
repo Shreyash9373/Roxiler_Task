@@ -1,5 +1,5 @@
 // src/stores/dto/create-store.dto.ts
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID, Length } from 'class-validator';
 
 export class CreateStoreDto {
   @IsNotEmpty()
@@ -12,4 +12,8 @@ export class CreateStoreDto {
   @IsNotEmpty()
   @Length(1, 400)
   address: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  ownerId: string;
 }

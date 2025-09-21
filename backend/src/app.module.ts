@@ -18,9 +18,9 @@ import { AdminModule } from './admin/admin.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL, // Supabase connection string
+      url: process.env.DATABASE_URL,
       entities: [User, Store, Rating],
-      synchronize: true, // turn OFF in production
+      synchronize: true,
     }),
     AuthModule,
     UsersModule,

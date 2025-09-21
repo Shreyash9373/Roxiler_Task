@@ -16,6 +16,6 @@ export class CreateUserDto {
   @Length(1, 400)
   address: string;
 
-  @IsIn(['USER', 'ADMIN'])
+  @IsIn(['USER', 'ADMIN', 'STORE_OWNER'])
   role: string;
 }

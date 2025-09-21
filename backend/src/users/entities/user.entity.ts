@@ -38,7 +38,7 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole;
-  // Relations
+
   @OneToMany(() => Store, (store) => store.owner)
   stores: Store[];
 

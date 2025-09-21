@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -12,11 +12,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  /**
-   * Create a new user (Admin or Normal user)
-   */
   async createUser(dto: CreateUserDto): Promise<User> {
-    // check if email already exists
     const existingUser = await this.usersRepository.findOne({
       where: { email: dto.email },
     });
@@ -24,10 +20,8 @@ export class UsersService {
       throw new BadRequestException('Email already registered');
     }
 
-    // hash password before saving
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    // ✅ Explicitly tell TS this is DeepPartial<User>
     const user = this.usersRepository.create({
       ...dto,
       password: hashedPassword,
@@ -36,9 +30,6 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  /**
-   * Find all users with optional filters
-   */
   async findAll(filters: {
     name?: string;
     email?: string;
@@ -66,10 +57,8 @@ export class UsersService {
 
     const users = await qb.getMany();
 
-    // ✅ add average rating if role = STORE_OWNER
     return users.map((u) => {
       if (u.role === 'STORE_OWNER' && u.stores?.length) {
-        // compute average rating across all owned stores
         const allRatings = u.stores.flatMap((s) => s.ratings ?? []);
         const avg =
           allRatings.length > 0
@@ -79,6 +68,12 @@ export class UsersService {
         return { ...u, averageRating: avg };
       }
       return u;
+    });
+  }
+  async getAllOwners() {
+    return this.usersRepository.find({
+      where: { role: UserRole.STORE_OWNER },
+      select: ['id', 'name'],
     });
   }
 }
